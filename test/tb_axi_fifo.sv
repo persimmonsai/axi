@@ -178,8 +178,10 @@ module tb_axi_fifo #(
     end
   end
 
-
-  default disable iff (!rst_n); aw_unstable :
+  `ifndef TARGET_XILINX
+  default disable iff (!rst_n);
+  `endif
+  aw_unstable :
   assert property (@(posedge clk) (slave.aw_valid && !slave.aw_ready) |=> $stable(slave.aw_addr))
   else $fatal(1, "AW is unstable.");
   w_unstable :

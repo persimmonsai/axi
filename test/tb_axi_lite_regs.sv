@@ -300,7 +300,9 @@ module tb_axi_lite_regs #(
   endtask : check_q
 
   // Some assertions for additional checking.
-  default disable iff (~rst_n);
+  `ifndef TARGET_XILINX
+  default disable iff (~rst_ni);
+  `endif
   for (genvar i = 0; i < TbRegNumBytes; i++) begin : gen_check_ro_bytes
     if (TbAxiReadOnly[i]) begin : gen_check_ro
       ro_assert_no_load: assert property (@(posedge clk)

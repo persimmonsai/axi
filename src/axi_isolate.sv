@@ -389,7 +389,9 @@ module axi_isolate_inner #(
   initial begin
     assume (NumPending > 0) else $fatal(1, "At least one pending transaction required.");
   end
+  `ifndef TARGET_XILINX
   default disable iff (!rst_ni);
+  `endif
   aw_overflow: assert property (@(posedge clk_i)
       (pending_aw_q == '1) |=> (pending_aw_q != '0)) else
       $fatal(1, "pending_aw_q overflowed");

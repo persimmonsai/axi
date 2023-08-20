@@ -209,7 +209,9 @@ module tb_axi_modify_address #(
   `AXI_ASSIGN_TO_R(r_act, upstream)
 
   // Assert that actual responses match expected responses.
-  default disable iff (~rst_n);
+  `ifndef TARGET_XILINX
+    default disable iff (~rst_ni);
+  `endif
   aw: assert property(@(posedge clk)
     downstream.aw_valid |-> aw_act == aw_exp
   ) else $error("AW %p != %p!", aw_act, aw_exp);

@@ -316,7 +316,9 @@ module axi_burst_splitter #(
   // --------------------------------------------------
   `ifndef VERILATOR
   // pragma translate_off
+  `ifndef TARGET_XILINX
   default disable iff (!rst_ni);
+  `endif
   // Inputs
   assume property (@(posedge clk_i) slv_req_i.aw_valid |->
       txn_supported(slv_req_i.aw.atop, slv_req_i.aw.burst, slv_req_i.aw.cache, slv_req_i.aw.len)
