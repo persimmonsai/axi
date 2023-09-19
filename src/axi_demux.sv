@@ -583,13 +583,19 @@ module axi_demux #(
    assign ar_ready = ar_valid & mst_resps_i[slv_ar_select].ar_ready;
    assign aw_ready = aw_valid & mst_resps_i[slv_aw_select].aw_ready;
 
+`ifdef HW_EMU
+   assign slv_w_ready = w_select_valid ? mst_resps_i[w_select].w_ready : '0;
+   assign w_cnt_down = w_select_valid ? slv_w_valid & mst_resps_i[w_select].w_ready & slv_w_chan.last : '0;
+`endif
     // process that defines the individual demuxes and assignments for the arbitration
     // as mst_reqs_o has to be drivem from the same always comb block!
     always_comb begin
+`ifndef HW_EMU
       // default assignments
       mst_reqs_o  = '0;
       slv_w_ready = 1'b0;
       w_cnt_down  = 1'b0;
+`endif
 
       for (int unsigned i = 0; i < NoMstPorts; i++) begin
         // AW channel
@@ -604,8 +610,10 @@ module axi_demux #(
         mst_reqs_o[i].w_valid = 1'b0;
         if (w_select_valid && (w_select == i)) begin
           mst_reqs_o[i].w_valid = slv_w_valid;
+`ifndef HW_EMU
           slv_w_ready           = mst_resps_i[i].w_ready;
           w_cnt_down            = slv_w_valid & mst_resps_i[i].w_ready & slv_w_chan.last;
+`endif
         end
 
         //  B channel

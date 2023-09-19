@@ -666,14 +666,25 @@ module axi_dw_downsizer #(
   // Byte-grouped data signal for the lane steering step
   mst_data_t w_data;
 
+`ifdef HW_EMU
+  // Each write transaction might trigger several B beats on the master (narrow) side.
+  // Only forward the last B beat of each transaction.
+
+  assign slv_resp_o.b_valid = forward_b_beat_o ? mst_resp.b_valid : 1'b0;
+  assign mst_req.b_ready = forward_b_beat_o ? slv_req_i.b_ready : 1'b1;
+  assign forward_b_beat_pop = forward_b_beat_o ?
+                              (mst_req.b_ready && mst_resp.b_valid) ? 1'b1 : 1'b0 : mst_resp.b_valid;
+`endif
+
   always_comb begin
     inject_aw_into_ar_req = 1'b0;
 
     // i_num_b_beats default state
     forward_b_beat_i    = '0  ;
     forward_b_beat_push = 1'b0;
+`ifndef HW_EMU
     forward_b_beat_pop  = 1'b0;
-
+`endif
     // Maintain state
     w_state_d = w_state_q;
     w_req_d   = w_req_q  ;
@@ -702,6 +713,7 @@ module axi_dw_downsizer #(
     slv_resp_o.b      = mst_resp.b        ;
     slv_resp_o.b.resp = w_req_d.burst_resp;
 
+`ifndef HW_EMU
     // Each write transaction might trigger several B beats on the master (narrow) side.
     // Only forward the last B beat of each transaction.
     if (forward_b_beat_o) begin
@@ -717,7 +729,7 @@ module axi_dw_downsizer #(
       mst_req.b_ready    = 1'b1            ;
       forward_b_beat_pop = mst_resp.b_valid;
     end
-
+`endif
     // Got a grant on the AW channel
     if (mst_req.aw_valid & mst_resp.aw_ready) begin
       w_req_d.aw_valid       = 1'b0;
