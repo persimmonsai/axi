@@ -94,6 +94,25 @@ module axi_to_mem_interleaved #(
   mem_data_t      [NumBanks-1:0]  r_mem_rdata,  w_mem_rdata;
 
   // split AXI bus in read and write
+`ifdef XSIM
+    assign axi_resp_o.r          = r_axi_resp.r;
+    assign axi_resp_o.r_valid    = r_axi_resp.r_valid;
+    assign axi_resp_o.ar_ready   = r_axi_resp.ar_ready;
+    assign axi_resp_o.b          = w_axi_resp.b;
+    assign axi_resp_o.b_valid    = w_axi_resp.b_valid;
+    assign axi_resp_o.w_ready    = w_axi_resp.w_ready;
+    assign axi_resp_o.aw_ready   = w_axi_resp.aw_ready;
+
+    assign w_axi_req.aw          = axi_req_i.aw;
+    assign w_axi_req.aw_valid    = axi_req_i.aw_valid;
+    assign w_axi_req.w           = axi_req_i.w;
+    assign w_axi_req.w_valid     = axi_req_i.w_valid;
+    assign w_axi_req.b_ready     = axi_req_i.b_ready;
+
+    assign r_axi_req.ar          = axi_req_i.ar;
+    assign r_axi_req.ar_valid    = axi_req_i.ar_valid;
+    assign r_axi_req.r_ready     = axi_req_i.r_ready;
+`else
   always_comb begin : proc_axi_rw_split
     axi_resp_o.r          = r_axi_resp.r;
     axi_resp_o.r_valid    = r_axi_resp.r_valid;
@@ -115,6 +134,7 @@ module axi_to_mem_interleaved #(
     r_axi_req.ar_valid    = axi_req_i.ar_valid;
     r_axi_req.r_ready     = axi_req_i.r_ready;
   end
+`endif /*XSIM*/
 
   axi_to_mem #(
     .axi_req_t   ( axi_req_t    ),
