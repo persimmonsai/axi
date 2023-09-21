@@ -666,7 +666,7 @@ module axi_dw_downsizer #(
   // Byte-grouped data signal for the lane steering step
   mst_data_t w_data;
 
-`ifdef HW_EMU
+`ifdef XSIM
   // Each write transaction might trigger several B beats on the master (narrow) side.
   // Only forward the last B beat of each transaction.
 
@@ -682,7 +682,7 @@ module axi_dw_downsizer #(
     // i_num_b_beats default state
     forward_b_beat_i    = '0  ;
     forward_b_beat_push = 1'b0;
-`ifndef HW_EMU
+`ifndef XSIM
     forward_b_beat_pop  = 1'b0;
 `endif
     // Maintain state
@@ -713,7 +713,7 @@ module axi_dw_downsizer #(
     slv_resp_o.b      = mst_resp.b        ;
     slv_resp_o.b.resp = w_req_d.burst_resp;
 
-`ifndef HW_EMU
+`ifndef XSIM
     // Each write transaction might trigger several B beats on the master (narrow) side.
     // Only forward the last B beat of each transaction.
     if (forward_b_beat_o) begin

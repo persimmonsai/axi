@@ -229,7 +229,7 @@ module axi_lite_from_mem #(
       assert (DataWidth == $bits(axi_rsp_i.r.data)) else
           $fatal(1, "DataWidth has to match axi_rsp_i.r.data!");
     end
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
     default disable iff (~rst_ni);
   `endif
     assert property (@(posedge clk_i) (mem_req_i && !mem_gnt_o) |=> mem_req_i) else

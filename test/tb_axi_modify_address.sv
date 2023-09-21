@@ -209,7 +209,7 @@ module tb_axi_modify_address #(
   `AXI_ASSIGN_TO_R(r_act, upstream)
 
   // Assert that actual responses match expected responses.
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
     default disable iff (~rst_ni);
   `endif
   aw: assert property(@(posedge clk)

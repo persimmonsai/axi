@@ -583,14 +583,14 @@ module axi_demux #(
    assign ar_ready = ar_valid & mst_resps_i[slv_ar_select].ar_ready;
    assign aw_ready = aw_valid & mst_resps_i[slv_aw_select].aw_ready;
 
-`ifdef HW_EMU
+`ifdef XSIM
    assign slv_w_ready = w_select_valid ? mst_resps_i[w_select].w_ready : '0;
    assign w_cnt_down = w_select_valid ? slv_w_valid & mst_resps_i[w_select].w_ready & slv_w_chan.last : '0;
 `endif
     // process that defines the individual demuxes and assignments for the arbitration
     // as mst_reqs_o has to be drivem from the same always comb block!
     always_comb begin
-`ifndef HW_EMU
+`ifndef XSIM
       // default assignments
       mst_reqs_o  = '0;
       slv_w_ready = 1'b0;
@@ -610,7 +610,7 @@ module axi_demux #(
         mst_reqs_o[i].w_valid = 1'b0;
         if (w_select_valid && (w_select == i)) begin
           mst_reqs_o[i].w_valid = slv_w_valid;
-`ifndef HW_EMU
+`ifndef XSIM
           slv_w_ready           = mst_resps_i[i].w_ready;
           w_cnt_down            = slv_w_valid & mst_resps_i[i].w_ready & slv_w_chan.last;
 `endif
@@ -642,14 +642,13 @@ module axi_demux #(
 // Validate parameters.
 // pragma translate_off
 `ifndef VERILATOR
-`ifndef XSIM
     initial begin: validate_params
       no_mst_ports: assume (NoMstPorts > 0) else
         $fatal(1, "The Number of slaves (NoMstPorts) has to be at least 1");
       AXI_ID_BITS:  assume (AxiIdWidth >= AxiLookBits) else
         $fatal(1, "AxiIdBits has to be equal or smaller than AxiIdWidth.");
     end
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
     default disable iff (!rst_ni);
   `endif
     aw_select: assume property( @(posedge clk_i) (slv_req_i.aw_valid |->
@@ -687,7 +686,6 @@ module axi_demux #(
         ((w_open == '0) && (w_cnt_up ^ w_cnt_down) |-> !w_cnt_down)) else
         $fatal(1, "W counter underflowed!");
     `ASSUME(NoAtopAllowed, !AtopSupport && slv_req_i.aw_valid |-> slv_req_i.aw.atop == '0)
-`endif
 `endif
 // pragma translate_on
   end

@@ -300,7 +300,7 @@ module tb_axi_lite_regs #(
   endtask : check_q
 
   // Some assertions for additional checking.
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
   default disable iff (~rst_ni);
   `endif
   for (genvar i = 0; i < TbRegNumBytes; i++) begin : gen_check_ro_bytes

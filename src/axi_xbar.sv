@@ -170,9 +170,8 @@ import cf_math_pkg::idx_width;
     // pragma translate_off
     `ifndef VERILATOR
     `ifndef XSIM
-  `ifndef TARGET_XILINX
     default disable iff (~rst_ni);
-  `endif
+    `endif
     default_aw_mst_port_en: assert property(
       @(posedge clk_i) (slv_ports_req_i[i].aw_valid && !slv_ports_resp_o[i].aw_ready)
           |=> $stable(en_default_mst_port_i[i]))
@@ -193,7 +192,6 @@ import cf_math_pkg::idx_width;
           |=> $stable(default_mst_port_i[i]))
         else $fatal (1, $sformatf("It is not allowed to change the default mst port\
                                    when there is an unserved Ar beat. Slave Port: %0d", i));
-    `endif
     `endif
     // pragma translate_on
     axi_demux #(

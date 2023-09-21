@@ -316,7 +316,7 @@ module axi_burst_splitter #(
   // --------------------------------------------------
   `ifndef VERILATOR
   // pragma translate_off
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
   default disable iff (!rst_ni);
   `endif
   // Inputs

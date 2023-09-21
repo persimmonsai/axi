@@ -396,7 +396,7 @@ module axi_lite_regs #(
       assert (RegNumBytes == $bits(AxiReadOnly)) else
           $fatal(1, "Each register needs a `ReadOnly` flag!");
     end
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
     default disable iff (~rst_ni);
   `endif
     for (genvar i = 0; i < RegNumBytes; i++) begin

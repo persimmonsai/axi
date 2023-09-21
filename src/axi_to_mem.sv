@@ -433,7 +433,7 @@ module axi_to_mem #(
   // Assertions
   // pragma translate_off
   `ifndef VERILATOR
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
   default disable iff (!rst_ni);
   `endif
   assume property (@(posedge clk_i)

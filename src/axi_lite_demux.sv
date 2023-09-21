@@ -442,7 +442,7 @@ module axi_lite_demux #(
 
     // pragma translate_off
     `ifndef VERILATOR
-    `ifndef TARGET_XILINX
+    `ifndef XSIM
     default disable iff (!rst_ni);
     `endif
     aw_select: assume property( @(posedge clk_i) (slv_req_i.aw_valid |->

@@ -170,7 +170,7 @@ module tb_axi_lite_to_apb #(
   // pragma translate_off
   `ifndef VERILATOR
   // Assertions to determine correct APB protocol sequencing
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
     default disable iff (!rst_ni);
   `endif
   for (genvar i = 0; i < NoApbSlaves; i++) begin : gen_apb_assertions

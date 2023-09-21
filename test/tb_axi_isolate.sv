@@ -202,7 +202,7 @@ module tb_axi_isolate #(
   end
 
 
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
   default disable iff (!rst_ni);
   `endif
   aw_unstable: assert property (@(posedge clk)

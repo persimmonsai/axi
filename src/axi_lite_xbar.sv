@@ -114,7 +114,7 @@ module axi_lite_xbar #(
     // make sure that the default slave does not get changed, if there is an unserved Ax
     // pragma translate_off
     `ifndef VERILATOR
-    `ifndef TARGET_XILINX
+    `ifndef XSIM
     default disable iff (~rst_ni);
     `endif
     default_aw_mst_port_en: assert property(

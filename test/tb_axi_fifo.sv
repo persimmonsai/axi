@@ -178,7 +178,7 @@ module tb_axi_fifo #(
     end
   end
 
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
   default disable iff (!rst_n);
   `endif
   aw_unstable :

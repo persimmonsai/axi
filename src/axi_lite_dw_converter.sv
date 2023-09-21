@@ -464,7 +464,7 @@ module axi_lite_dw_converter #(
     assume ($onehot(AxiSlvPortDataWidth)) else $fatal(1, "AxiSlvPortDataWidth must be power of 2");
     assume ($onehot(AxiMstPortDataWidth)) else $fatal(1, "AxiMstPortDataWidth must be power of 2");
   end
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
   default disable iff (~rst_ni);
   `endif
   stable_aw: assert property (@(posedge clk_i)

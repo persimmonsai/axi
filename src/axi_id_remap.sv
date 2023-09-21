@@ -382,7 +382,7 @@ module axi_id_remap #(
     assert ($bits(mst_req_o.ar.id) == AxiMstPortIdWidth);
     assert ($bits(mst_resp_i.r.id) == AxiMstPortIdWidth);
   end
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
   default disable iff (!rst_ni);
   `endif
   assert property (@(posedge clk_i) slv_req_i.aw_valid && slv_resp_o.aw_ready
@@ -554,7 +554,7 @@ module axi_id_remap_table #(
   // Assertions
   // pragma translate_off
   `ifndef VERILATOR
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
     default disable iff (!rst_ni);
   `endif
     assume property (@(posedge clk_i) push_i |->

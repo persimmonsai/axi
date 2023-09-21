@@ -197,7 +197,7 @@ module axi_serializer #(
     assert (MaxWriteTxns  >= 1)
       else $fatal(1, "Maximum number of write transactions must be >= 1!");
   end
-  `ifndef TARGET_XILINX
+  `ifndef XSIM
   default disable iff (~rst_ni);
   `endif
   aw_lost : assert property( @(posedge clk_i)
