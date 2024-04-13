@@ -210,7 +210,7 @@ module tb_axi_modify_address #(
 
   // Assert that actual responses match expected responses.
   `ifndef XSIM
-    default disable iff (~rst_ni);
+    default disable iff (~rst_n);
   `endif
   aw: assert property(@(posedge clk)
     downstream.aw_valid |-> aw_act == aw_exp

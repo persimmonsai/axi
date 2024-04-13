@@ -301,7 +301,7 @@ module tb_axi_lite_regs #(
 
   // Some assertions for additional checking.
   `ifndef XSIM
-  default disable iff (~rst_ni);
+  default disable iff (~rst_n);
   `endif
   for (genvar i = 0; i < TbRegNumBytes; i++) begin : gen_check_ro_bytes
     if (TbAxiReadOnly[i]) begin : gen_check_ro

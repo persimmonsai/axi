@@ -171,7 +171,7 @@ module tb_axi_lite_to_apb #(
   `ifndef VERILATOR
   // Assertions to determine correct APB protocol sequencing
   `ifndef XSIM
-    default disable iff (!rst_ni);
+    default disable iff (!rst_n);
   `endif
   for (genvar i = 0; i < NoApbSlaves; i++) begin : gen_apb_assertions
     // when psel is not asserted, the bus is in the idle state
