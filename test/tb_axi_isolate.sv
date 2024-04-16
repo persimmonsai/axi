@@ -203,7 +203,7 @@ module tb_axi_isolate #(
 
 
   `ifndef XSIM
-  default disable iff (!rst_ni);
+  default disable iff (!rst_n);
   `endif
   aw_unstable: assert property (@(posedge clk)
       (slave.aw_valid && !slave.aw_ready) |=> $stable(slave.aw_addr)) else
