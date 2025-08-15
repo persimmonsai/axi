@@ -286,7 +286,7 @@ endmodule
 
 
 `ifndef VCS
-`ifndef GENUS
+`ifndef TARGET_GENUS
 // As of now, VCS and Genus does not support multi-dimensional array of interfaces.
 `include "axi/assign.svh"
 `include "axi/typedef.svh"
