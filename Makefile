@@ -29,10 +29,11 @@ TBS         ?= axi_addr_test \
                axi_fifo \
                axi_isolate \
                axi_iw_converter \
+               axi_lite_dw_converter \
+               axi_lite_mailbox \
                axi_lite_regs \
                axi_lite_to_apb \
                axi_lite_to_axi \
-               axi_lite_mailbox \
                axi_lite_xbar \
                axi_modify_address \
                axi_serializer \
