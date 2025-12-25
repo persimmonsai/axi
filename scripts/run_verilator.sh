@@ -40,7 +40,7 @@ while (( "$#" )); do
             fi
             TEST_MODULE="$2"
             shift 2;;
-        -*--*) # unsupported flag
+        -*|--*) # unsupported flag
             echo "Error: Unsupported flag '$1'." >&2
             exit 1;;
         *) # preserve positional arguments
@@ -63,6 +63,11 @@ if [ "$MODE" = "lint" ]; then
     echo "Verilator lint check completed successfully."
 elif [ "$MODE" = "test" ]; then
     # Test mode - lint specific testbench
+    # Validate test module name to prevent command injection
+    if [[ ! "$TEST_MODULE" =~ ^[a-zA-Z0-9_]+$ ]]; then
+        echo "Error: Invalid test module name '$TEST_MODULE'. Only alphanumeric characters and underscores are allowed."
+        exit 1
+    fi
     if [ ! -e "$ROOT/test/tb_$TEST_MODULE.sv" ]; then
         echo "Error: Testbench for '$TEST_MODULE' not found!"
         exit 1

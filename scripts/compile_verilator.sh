@@ -16,7 +16,9 @@
 
 set -euo pipefail
 
-[ -z "${VERILATOR:-}" ] && VERILATOR=verilator
+if [ -z "${VERILATOR:-}" ]; then
+    VERILATOR=verilator
+fi
 
 # Generate file list for Verilator
 bender script verilator -t test -t rtl > verilator.f
