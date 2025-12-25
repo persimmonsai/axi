@@ -34,6 +34,10 @@ while (( "$#" )); do
             shift;;
         --test)
             MODE="test"
+            if [ $# -lt 2 ]; then
+                echo "Error: --test requires a test module name" >&2
+                exit 1
+            fi
             TEST_MODULE="$2"
             shift 2;;
         -*--*) # unsupported flag
@@ -59,10 +63,6 @@ if [ "$MODE" = "lint" ]; then
     echo "Verilator lint check completed successfully."
 elif [ "$MODE" = "test" ]; then
     # Test mode - lint specific testbench
-    if [ -z "$TEST_MODULE" ]; then
-        echo "Error: --test requires a test module name"
-        exit 1
-    fi
     if [ ! -e "$ROOT/test/tb_$TEST_MODULE.sv" ]; then
         echo "Error: Testbench for '$TEST_MODULE' not found!"
         exit 1

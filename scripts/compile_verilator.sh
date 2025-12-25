@@ -14,7 +14,7 @@
 # - Andreas Kurth <akurth@iis.ee.ethz.ch>
 # - Fabian Schuiki <fschuiki@iis.ee.ethz.ch>
 
-set -e
+set -euo pipefail
 
 [ -z "${VERILATOR:-}" ] && VERILATOR=verilator
 
