@@ -18,7 +18,7 @@
 set -euo pipefail
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
-if test -z ${VERILATOR+x}; then
+if [ -z "${VERILATOR:-}" ]; then
     VERILATOR=verilator
 fi
 
@@ -49,7 +49,6 @@ eval set -- "$PARAMS"
 # Common Verilator flags
 VERILATOR_FLAGS=()
 VERILATOR_FLAGS+=(-Wno-fatal)
-VERILATOR_FLAGS+=(--trace)
 VERILATOR_FLAGS+=(-sv)
 
 if [ "$MODE" = "lint" ]; then

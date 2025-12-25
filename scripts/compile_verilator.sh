@@ -16,7 +16,7 @@
 
 set -e
 
-[ ! -z "$VERILATOR" ] || VERILATOR=verilator
+[ -z "${VERILATOR:-}" ] && VERILATOR=verilator
 
 # Generate file list for Verilator
 bender script verilator -t test -t rtl > verilator.f

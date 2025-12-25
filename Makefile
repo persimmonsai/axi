@@ -106,4 +106,5 @@ verilator_lint_all: $(VERILATOR_TARGETS)
 clean:
 	rm -rf build
 	rm -f  *.log
+	# Verilator lint status markers
 	rm -f  *.vlt

@@ -42,7 +42,8 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Install Bender (Hardware dependency manager)
-RUN cargo install bender --version 0.23.1
+ARG BENDER_VERSION=0.23.1
+RUN cargo install bender --version ${BENDER_VERSION}
 
 # Build Verilator from source
 ARG VERILATOR_VERSION=v5.028
