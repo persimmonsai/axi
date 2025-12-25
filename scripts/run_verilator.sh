@@ -26,6 +26,11 @@ fi
 MODE="lint"
 TEST_MODULE=""
 
+# Common Verilator flags
+VERILATOR_FLAGS=()
+VERILATOR_FLAGS+=(-Wno-fatal)
+VERILATOR_FLAGS+=(-sv)
+
 # Parse arguments
 PARAMS=()
 while (( "$#" )); do
@@ -56,11 +61,6 @@ while (( "$#" )); do
 done
 # Restore positional parameters
 set -- "${PARAMS[@]}"
-
-# Common Verilator flags
-VERILATOR_FLAGS=()
-VERILATOR_FLAGS+=(-Wno-fatal)
-VERILATOR_FLAGS+=(-sv)
 
 if [ "$MODE" = "lint" ]; then
     # Lint mode for synthesis bench
