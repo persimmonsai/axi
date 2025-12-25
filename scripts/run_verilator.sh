@@ -60,11 +60,7 @@ while (( "$#" )); do
     esac
 done
 # Restore positional parameters
-if [[ ${#PARAMS[@]} -gt 0 ]]; then
-    set -- "${PARAMS[@]}"
-else
-    set --
-fi
+set -- "${PARAMS[@]}"
 
 if [ "$MODE" = "lint" ]; then
     # Lint mode for synthesis bench
