@@ -19,6 +19,8 @@ else
 	SYNOPSYS_DC ?= dc_shell
 endif
 
+VERILATOR   ?= verilator
+
 TBS         ?= axi_addr_test \
                axi_atop_filter \
                axi_cdc axi_delayer \
@@ -39,23 +41,28 @@ TBS         ?= axi_addr_test \
                axi_to_mem_banked \
                axi_xbar
 
-SIM_TARGETS := $(addsuffix .log,$(addprefix sim-,$(TBS)))
+SIM_TARGETS       := $(addsuffix .log,$(addprefix sim-,$(TBS)))
+VERILATOR_TARGETS := $(addsuffix .vlt,$(addprefix verilator-,$(TBS)))
 
 
 .SHELL: bash
 
-.PHONY: help all sim_all clean
+.PHONY: help all sim_all verilator_lint_synth verilator_lint_all clean
 
 
 help:
 	@echo ""
-	@echo "elab.log:     elaborates all files using Synopsys DC"
-	@echo "compile.log:  compile files using Questasim"
-	@echo "sim-#TB#.log: simulates a given testbench, available TBs are:"
+	@echo "elab.log:               elaborates all files using Synopsys DC"
+	@echo "compile.log:            compile files using Questasim"
+	@echo "sim-#TB#.log:           simulates a given testbench, available TBs are:"
 	@echo "$(addprefix ###############-#,$(TBS))" | sed -e 's/ /\n/g' | sed -e 's/#/ /g'
-	@echo "sim_all:      simulates all available testbenches"
+	@echo "sim_all:                simulates all available testbenches"
 	@echo ""
-	@echo "clean:        cleans generated files"
+	@echo "verilator_lint_synth:   run Verilator lint check on synthesis bench"
+	@echo "verilator-#TB#.vlt:     run Verilator lint check on a specific testbench"
+	@echo "verilator_lint_all:     run Verilator lint check on all testbenches"
+	@echo ""
+	@echo "clean:                  cleans generated files"
 	@echo ""
 
 
@@ -85,6 +92,18 @@ sim-%.log: compile.log
 	(! grep -n "Fatal:" $@)
 
 
+verilator_lint_synth: Bender.yml | build
+	export VERILATOR="$(VERILATOR)"; cd build && ../scripts/run_verilator.sh --lint-only | tee ../verilator-synth.log
+
+
+verilator-%.vlt: Bender.yml | build
+	export VERILATOR="$(VERILATOR)"; cd build && ../scripts/run_verilator.sh --test $* | tee ../verilator-$*.log
+
+
+verilator_lint_all: $(VERILATOR_TARGETS)
+
+
 clean:
 	rm -rf build
 	rm -f  *.log
+	rm -f  *.vlt

@@ -1,0 +1,67 @@
+# Copyright and related rights are licensed under the Solderpad Hardware
+# License, Version 0.51 (the "License"); you may not use this file except in
+# compliance with the License.  You may obtain a copy of the License at
+# http://solderpad.org/licenses/SHL-0.51. Unless required by applicable law
+# or agreed to in writing, software, hardware and materials distributed under
+# this License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations under the License.
+
+# Dockerfile for Verilator-based CI test environment
+# This builds Verilator from source to provide a test environment
+# similar to the existing QuestaSim/Modelsim setup
+
+FROM ubuntu:22.04
+
+# Avoid prompts from apt
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies for building Verilator and running tests
+RUN apt-get update && apt-get install -y \
+    autoconf \
+    bc \
+    bison \
+    build-essential \
+    ca-certificates \
+    curl \
+    flex \
+    git \
+    libfl-dev \
+    libfl2 \
+    make \
+    perl \
+    perl-doc \
+    python3 \
+    python3-pip \
+    zlib1g \
+    zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust (required for Bender)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install Bender (Hardware dependency manager)
+RUN cargo install bender --version 0.23.1
+
+# Build Verilator from source
+ARG VERILATOR_VERSION=v5.028
+WORKDIR /tmp
+RUN git clone https://github.com/verilator/verilator && \
+    cd verilator && \
+    git checkout ${VERILATOR_VERSION} && \
+    autoconf && \
+    ./configure && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && \
+    rm -rf verilator
+
+# Verify Verilator installation
+RUN verilator --version
+
+# Set working directory
+WORKDIR /workspace
+
+# Default command
+CMD ["/bin/bash"]
