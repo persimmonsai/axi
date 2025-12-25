@@ -7,3 +7,5 @@
 /Bender.local
 *.log
 *.wlf
+*.vlt
+verilator.f

@@ -2,6 +2,24 @@
 
 This directory contains the Dockerfile and configuration for building a Verilator-based CI test environment for the AXI repository.
 
+## Quick Start
+
+Build and test locally with Docker:
+```bash
+# Build the Docker image
+docker build -t axi-verilator:latest -f .ci/Dockerfile.verilator .
+
+# Run lint check on synthesis bench
+docker run --rm -v $(pwd):/workspace -w /workspace/build \
+    axi-verilator:latest \
+    bash -c "mkdir -p /workspace/build && cd /workspace/build && ../scripts/run_verilator.sh --lint-only"
+```
+
+Or use the Makefile (requires local Verilator and Bender installation):
+```bash
+make verilator_lint_synth
+```
+
 ## Overview
 
 The Verilator test environment provides an open-source alternative to the existing QuestaSim/Modelsim-based test infrastructure. While the full simulation capabilities are being developed, the current implementation supports:
@@ -86,12 +104,21 @@ The workflow is triggered on:
 
 ## Current Limitations
 
-The current implementation focuses on lint checking. Full simulation support with Verilator requires:
-- C++ testbench wrappers (testbenches currently use SystemVerilog classes and constructs not fully supported by Verilator)
-- DPI-C interfaces for some verification components
-- Potentially simplified testbenches for Verilator compatibility
+The current implementation focuses on lint checking. The testbenches use SystemVerilog features that are not fully supported by Verilator for simulation:
 
-These enhancements can be added incrementally as the Verilator environment matures.
+- **Class-based testbenches**: The existing testbenches use SystemVerilog classes (e.g., `axi_rand_master_t`, `axi_rand_slave_t`) which Verilator doesn't support for simulation
+- **Dynamic memory constructs**: Features like `push_back()`, `pop_front()` on queues, and other dynamic data structures
+- **Randomization**: The `randomize()` construct and random class instances
+
+These limitations are expected and the lint-only mode serves as a valuable first step for:
+- Catching syntax errors
+- Detecting basic type mismatches
+- Identifying missing signals and connections
+- Validating module instantiation correctness
+
+## Verilator Version Note
+
+The Docker image builds Verilator v5.028 from source to ensure the latest features and bug fixes. Some known issues in earlier versions (like v5.020 available in Ubuntu 22.04 repositories) include internal compiler errors on certain SystemVerilog constructs. Using a source-built version provides better compatibility.
 
 ## Future Work
 
