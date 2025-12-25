@@ -70,13 +70,13 @@ if [ "$MODE" = "lint" ]; then
     echo "Verilator lint check completed successfully."
 elif [ "$MODE" = "test" ]; then
     # Test mode - lint specific testbench
-    if [ ! -e "$ROOT/test/tb_$TEST_MODULE.sv" ]; then
+    if [ ! -e "$ROOT/test/tb_${TEST_MODULE}.sv" ]; then
         echo "Error: Testbench for '$TEST_MODULE' not found!"
         exit 1
     fi
     echo "Running Verilator lint check on tb_$TEST_MODULE..."
     bender script verilator -t test -t rtl > ./verilator.f
-    $VERILATOR --top-module tb_$TEST_MODULE --lint-only -f verilator.f ${VERILATOR_FLAGS[@]}
+    $VERILATOR --top-module "tb_$TEST_MODULE" --lint-only -f verilator.f ${VERILATOR_FLAGS[@]}
     echo "Verilator lint check for tb_$TEST_MODULE completed successfully."
 else
     echo "Error: Unknown mode '$MODE'"
