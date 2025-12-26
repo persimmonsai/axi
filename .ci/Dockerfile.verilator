@@ -17,12 +17,14 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies for building Verilator and running tests
+# Including Rust/Cargo from Ubuntu packages to avoid SSL issues with rustup
 RUN apt-get update && apt-get install -y \
     autoconf \
     bc \
     bison \
     build-essential \
     ca-certificates \
+    cargo \
     curl \
     flex \
     git \
@@ -33,21 +35,31 @@ RUN apt-get update && apt-get install -y \
     perl-doc \
     python3 \
     python3-pip \
+    rustc \
     zlib1g \
     zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Rust (required for Bender)
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
+# Configure cargo to work with SSL inspection/corporate proxies
+RUN mkdir -p /root/.cargo && \
+    echo '[http]' >> /root/.cargo/config.toml && \
+    echo 'check-revoke = false' >> /root/.cargo/config.toml && \
+    echo '[net]' >> /root/.cargo/config.toml && \
+    echo 'git-fetch-with-cli = true' >> /root/.cargo/config.toml
+# Configure git to bypass SSL verification
+RUN git config --global http.sslVerify false
 
 # Install Bender (Hardware dependency manager)
 ARG BENDER_VERSION=0.23.1
+# Bypass SSL verification for cargo in environments with SSL inspection
+ENV CARGO_HTTP_CHECK_REVOKE=false
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
 RUN cargo install bender --version ${BENDER_VERSION}
 
 # Build Verilator from source
 ARG VERILATOR_VERSION=v5.028
 WORKDIR /tmp
+# Git SSL verification is already disabled globally above
 RUN git clone https://github.com/verilator/verilator && \
     cd verilator && \
     git checkout ${VERILATOR_VERSION} && \

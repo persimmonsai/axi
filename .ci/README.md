@@ -34,7 +34,7 @@ The Verilator test environment provides an open-source alternative to the existi
 
 The Docker image includes:
 - Verilator built from source (version 5.028)
-- Rust toolchain
+- Rust toolchain and Cargo (from Ubuntu packages)
 - Bender (hardware dependency manager)
 - All necessary build dependencies
 
@@ -43,6 +43,11 @@ To build the Docker image locally:
 ```bash
 docker build -t axi-verilator:latest -f .ci/Dockerfile.verilator .
 ```
+
+**Note for SSL Inspection Environments**: If you're building behind a corporate proxy with SSL inspection, the Dockerfile is configured to handle self-signed certificates. However, cargo may still have issues accessing crates.io. In such environments, you may need to:
+1. Configure your corporate proxy settings in Docker
+2. Add trusted certificates to the container
+3. Use a pre-built image from a trusted registry
 
 ### Using the Image
 
