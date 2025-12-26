@@ -14,7 +14,7 @@ name: Verilator CI
 
 jobs:
   build-verilator-image:
-    runs-on: ubuntu-latest
+    runs-on: verilog-runner
     permissions:
       contents: read
     steps:
