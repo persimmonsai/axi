@@ -11,7 +11,7 @@
 # This builds Verilator from source to provide a test environment
 # similar to the existing QuestaSim/Modelsim setup
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
