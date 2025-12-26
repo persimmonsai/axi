@@ -15,14 +15,70 @@
 # - Florian Zaruba <zarubaf@iis.ee.ethz.ch>
 # - Andreas Kurth <akurth@iis.ee.ethz.ch>
 
-set -e
+set -euo pipefail
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
-[ ! -z "$VERILATOR" ] || VERILATOR="verilator"
+if [ -z "${VERILATOR:-}" ]; then
+    VERILATOR=verilator
+fi
 
-bender script verilator -t synthesis -t synth_test > ./verilator.f
+# Default mode is lint-only
+MODE="lint"
+TEST_MODULE=""
 
+# Common Verilator flags
 VERILATOR_FLAGS=()
 VERILATOR_FLAGS+=(-Wno-fatal)
+VERILATOR_FLAGS+=(-sv)
 
-$VERILATOR --top-module axi_synth_bench --lint-only -f verilator.f ${VERILATOR_FLAGS[@]}
+# Parse arguments
+PARAMS=()
+while (( "$#" )); do
+    case "$1" in
+        --lint-only)
+            MODE="lint"
+            shift;;
+        --test)
+            MODE="test"
+            if [ $# -lt 2 ]; then
+                echo "Error: --test requires a test module name" >&2
+                exit 1
+            fi
+            # Validate test module name immediately to prevent command injection
+            if [[ ! "$2" =~ ^[a-zA-Z0-9_]+$ ]]; then
+                echo "Error: Invalid test module name '$2'. Only alphanumeric characters and underscores are allowed." >&2
+                exit 1
+            fi
+            TEST_MODULE="$2"
+            shift 2;;
+        -*|--*) # unsupported flag
+            echo "Error: Unsupported flag '$1'." >&2
+            exit 1;;
+        *) # preserve positional arguments
+            PARAMS+=("$1")
+            shift;;
+    esac
+done
+# Restore positional parameters
+set -- "${PARAMS[@]}"
+
+if [ "$MODE" = "lint" ]; then
+    # Lint mode for synthesis bench
+    echo "Running Verilator in lint-only mode on axi_synth_bench..."
+    bender script verilator -t synthesis -t synth_test > ./verilator.f
+    $VERILATOR --top-module axi_synth_bench --lint-only -f verilator.f ${VERILATOR_FLAGS[@]}
+    echo "Verilator lint check completed successfully."
+elif [ "$MODE" = "test" ]; then
+    # Test mode - lint specific testbench
+    if [ ! -e "$ROOT/test/tb_${TEST_MODULE}.sv" ]; then
+        echo "Error: Testbench for '$TEST_MODULE' not found!"
+        exit 1
+    fi
+    echo "Running Verilator lint check on tb_$TEST_MODULE..."
+    bender script verilator -t test -t rtl > ./verilator.f
+    $VERILATOR --top-module "tb_$TEST_MODULE" --lint-only -f verilator.f ${VERILATOR_FLAGS[@]}
+    echo "Verilator lint check for tb_$TEST_MODULE completed successfully."
+else
+    echo "Error: Unknown mode '$MODE'"
+    exit 1
+fi
