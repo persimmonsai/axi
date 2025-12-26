@@ -56,7 +56,7 @@ RUN mkdir -p /root/.cargo && \
 RUN git config --global http.sslVerify false
 
 # Install Bender (Hardware dependency manager)
-ARG BENDER_VERSION=0.23.1
+ARG BENDER_VERSION=0.29.1
 # Install from git instead of crates.io to avoid SSL issues with crates.io index
 # Git SSL verification is already disabled globally above
 RUN cargo install --git https://github.com/pulp-platform/bender.git --tag v${BENDER_VERSION} bender
