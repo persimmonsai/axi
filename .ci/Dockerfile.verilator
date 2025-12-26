@@ -42,19 +42,18 @@ RUN apt-get update && apt-get install -y \
 
 # Configure cargo to work with SSL inspection/corporate proxies
 # Use git protocol for crates.io to avoid SSL issues
+# Also configure to use git for fetching crate contents instead of HTTP
 RUN mkdir -p /root/.cargo && \
     echo '[source.crates-io]' >> /root/.cargo/config.toml && \
     echo 'registry = "https://github.com/rust-lang/crates.io-index"' >> /root/.cargo/config.toml && \
     echo '[http]' >> /root/.cargo/config.toml && \
     echo 'check-revoke = false' >> /root/.cargo/config.toml && \
-    echo 'cainfo = "/etc/ssl/certs/ca-certificates.crt"' >> /root/.cargo/config.toml && \
-    echo 'ssl-version = "tlsv1.3"' >> /root/.cargo/config.toml && \
     echo '[net]' >> /root/.cargo/config.toml && \
-    echo 'git-fetch-with-cli = true' >> /root/.cargo/config.toml
+    echo 'git-fetch-with-cli = true' >> /root/.cargo/config.toml && \
+    echo '[registries.crates-io]' >> /root/.cargo/config.toml && \
+    echo 'protocol = "git"' >> /root/.cargo/config.toml
 # Configure git to bypass SSL verification
 RUN git config --global http.sslVerify false
-# Set environment to bypass SSL for curl (used by cargo)
-ENV SSL_CERT_FILE=/dev/null
 
 # Install Bender (Hardware dependency manager)
 ARG BENDER_VERSION=0.23.1
